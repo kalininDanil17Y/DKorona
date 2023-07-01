@@ -3,7 +3,6 @@
 namespace DKLittleSite\Abstract;
 
 use DKLittleSite\DB;
-use DKLittleSite\Logger;
 
 /**
  * Базовый класс модели
@@ -38,7 +37,7 @@ abstract class AbstractModel {
 	{
 		$db = DB::getInstance();
 		$table = (new static)->table;
-		$sql = "SELECT * FROM $table";
+		$sql = sprintf(/** @lang text */ 'SELECT * FROM %s', $table);
 		$result = $db->query($sql);
 		$models = [];
 		foreach ($result as $row) {
@@ -59,7 +58,7 @@ abstract class AbstractModel {
 	{
 		$db = DB::getInstance();
 		$table = (new static)->table;
-		$sql = "SELECT * FROM $table WHERE id = ?";
+		$sql = sprintf(/** @lang text */ "SELECT * FROM %s WHERE id = ?", $table);
 		$params = [$id];
 		$result = $db->query($sql, $params);
 		if (count($result) > 0) {
@@ -75,7 +74,7 @@ abstract class AbstractModel {
 	{
 		$db = DB::getInstance();
 		$table = (new static)->table;
-		$sql = "SELECT * FROM $table WHERE id = ?";
+		$sql = sprintf(/** @lang text */ "SELECT * FROM %s WHERE id = ?", $table);
 		$params = [$this->data['id']];
 		$result = $db->query($sql, $params);
 		if (count($result) > 0) {
@@ -106,7 +105,7 @@ abstract class AbstractModel {
 			}
 			$params[] = $id;
 			$updates = implode(', ', $updates);
-			$sql = "UPDATE $table SET $updates WHERE id = ?";
+			$sql = sprintf(/** @lang text */ "UPDATE %s SET %s WHERE id = ?", $table, $updates);
 			$db->execute($sql, $params);
 			$this->data['id'] = $id;
 		} else {
@@ -116,7 +115,7 @@ abstract class AbstractModel {
 			$keys = implode(', ', $keys);
 			$params = array_fill(0, count($values), '?');
 			$params = implode(', ', $params);
-			$sql = "INSERT INTO $table ($keys) VALUES ($params)";
+			$sql = sprintf(/** @lang text */ "INSERT INTO %s (%s) VALUES (%s)", $table, $keys, $params);
 			$db->execute($sql, $values);
 			$this->data['id'] = $db->lastInsertId();
 		}
@@ -132,7 +131,7 @@ abstract class AbstractModel {
 		$table = $this->table;
 		if (isset($this->data['id'])) {
 			$id = $this->data['id'];
-			$sql = "DELETE FROM $table WHERE id = ?";
+			$sql = sprintf(/** @lang text */ "DELETE FROM %s WHERE id = ?", $table);
 			$params = [$id];
 			$db->execute($sql, $params);
 			unset($this->data['id']);

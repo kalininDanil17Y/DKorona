@@ -79,11 +79,13 @@ class httpResponse
 	 */
 	public function send(): void
 	{
+		header('charset=utf-8');
 		http_response_code($this->http_code);
 		if (!empty((array) $this->json->get())) {
 			header("Content-Type: application/json");
 			echo json_encode($this->json->get());
 		} else {
+			header('Content-Type: text/html;');
 			echo $this->body->get();
 		}
 	}
