@@ -18,7 +18,7 @@ class Router
 			$pattern = $regex;
 		} else {
 			// Заменяем параметры в {} на соответствующие регулярные выражения
-			$pattern = preg_replace('/\{([^}]+)\}/', '(?P<$1>[^/]+)', $url);
+			$pattern = preg_replace('/\{([^}]+)}/', '(?P<$1>[^/]+)', $url);
 			$pattern = "/^" . str_replace("/", "\/", $pattern) . "$/";
 		}
 
@@ -113,10 +113,19 @@ class Router
 						call_user_func($controller, $request, $response, $matches, $this);
 					} else {
 						// Если контроллер является строкой, то создаем экземпляр класса и вызываем его метод
-
 						list($class, $method) = explode("@", $controller);
 
-						$this->core->logger->log($class);
+						$class = str_replace('/', '\\', $class);
+						if (!str_contains($class, '\\')) {
+							$class = '\DKLittleSite\Controllers\\' . $class;
+						}
+
+						if (!class_exists($class)) {
+							throw new \Exception("Class $class does not exist");
+						}
+						if (!method_exists($class, $method)) {
+							throw new \Exception("Method $method does not exist in class $class");
+						}
 
 						$instance = new $class();
 						$instance->$method($request, $response, $matches, $this);
