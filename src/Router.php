@@ -1,6 +1,8 @@
 <?php
 namespace DKLittleSite;
 
+use DKLittleSite\Exceptions\ForbiddenException;
+use DKLittleSite\Exceptions\InternalServerErrorException;
 use DKLittleSite\Exceptions\PageNotFoundException;
 
 class Router
@@ -131,16 +133,23 @@ class Router
 
 						$instance = new $class();
 						$instance->$method($request, $response, $matches, $this);
-
-						throw new PageNotFoundException();
 					}
-				} catch (PageNotFoundException $e) {
-					$response->json()->set([
-						'error' => $e->getMessage(),
-						'file' => $e->getFile(),
-						'line' => $e->getLine(),
-						'data' => $e->getData()
-					]);
+				} catch (PageNotFoundException|InternalServerErrorException|ForbiddenException $e) {
+					/**
+					 * Это Пример
+					 * todo: сделать нормально
+					 */
+					$t = '';
+					if ($e::class == 'DKLittleSite\Exceptions\PageNotFoundException') {
+						$t = 'page404';
+					} elseif ($e::class == 'DKLittleSite\Exceptions\InternalServerErrorException') {
+						$t = 'page500';
+					} elseif ($e::class == 'DKLittleSite\Exceptions\ForbiddenException') {
+						$t = 'page403';
+					}
+
+					$response->json()->set([]);
+					$response->body()->set($t);
 				} catch (\Throwable $e) {
 					if ($this->core->system_var->get('debug')) {
 						$response->json()->set([
