@@ -112,45 +112,51 @@ class Router
 				$controller = $route["controller"];
 
 				try {
-					// Если контроллер является анонимной функцией, то выполняем ее
-					if (is_callable($controller)) {
-						call_user_func($controller, $request, $response, $matches, $this);
-					} else {
-						// Если контроллер является строкой, то создаем экземпляр класса и вызываем его метод
-						list($class, $method) = explode("@", $controller);
+					try {
+						// Если контроллер является анонимной функцией, то выполняем ее
+						if (is_callable($controller)) {
+							call_user_func($controller, $request, $response, $matches, $this);
+						} else {
+							// Если контроллер является строкой, то создаем экземпляр класса и вызываем его метод
+							list($class, $method) = explode("@", $controller);
 
-						$class = str_replace('/', '\\', $class);
-						if (!str_contains($class, '\\')) {
-							$class = '\DKLittleSite\Controllers\\' . $class;
+							$class = str_replace('/', '\\', $class);
+							if (!str_contains($class, '\\')) {
+								$class = '\DKLittleSite\Controllers\\' . $class;
+							}
+
+							if (!class_exists($class)) {
+								throw new \Exception("Class $class does not exist");
+							}
+							if (!method_exists($class, $method)) {
+								throw new \Exception("Method $method does not exist in class $class");
+							}
+
+							$instance = new $class();
+							$instance->$method($request, $response, $matches, $this);
+						}
+					} catch (PageNotFoundException|ForbiddenException $e) {
+						$template = '';
+						switch ($e::class) {
+							case 'DKLittleSite\Exceptions\PageNotFoundException':
+								$template = 'page404';
+								break;
+							case 'DKLittleSite\Exceptions\ForbiddenException':
+								$template = 'page403';
+								break;
 						}
 
-						if (!class_exists($class)) {
-							throw new \Exception("Class $class does not exist");
-						}
-						if (!method_exists($class, $method)) {
-							throw new \Exception("Method $method does not exist in class $class");
+						$html = View::render($template, [
+							'title' => $e->getMessage()
+						]);
+
+						if (!$html) {
+							$html = $template;
 						}
 
-						$instance = new $class();
-						$instance->$method($request, $response, $matches, $this);
+						$response->httpCode($e->getCode())->body()->set($html);
 					}
-				} catch (PageNotFoundException|InternalServerErrorException|ForbiddenException $e) {
-					/**
-					 * Это Пример
-					 * todo: сделать нормально
-					 */
-					$t = '';
-					if ($e::class == 'DKLittleSite\Exceptions\PageNotFoundException') {
-						$t = 'page404';
-					} elseif ($e::class == 'DKLittleSite\Exceptions\InternalServerErrorException') {
-						$t = 'page500';
-					} elseif ($e::class == 'DKLittleSite\Exceptions\ForbiddenException') {
-						$t = 'page403';
-					}
-
-					$response->json()->set([]);
-					$response->body()->set($t);
-				} catch (\Throwable $e) {
+				} catch (\Throwable|InternalServerErrorException $e) {
 					if ($this->core->system_var->get('debug')) {
 						$response->json()->set([
 							'error' => $e->getMessage(),
@@ -167,8 +173,10 @@ class Router
 			}
 		}
 
-		// Если страницы нет, вывести "404"
+		// Если контроллера нет, вывести страницу 404
 		header("HTTP/1.0 404 Not Found");
-		echo "404";
+		if (!View::render('page404')) {
+			echo 404;
+		}
 	}
 }

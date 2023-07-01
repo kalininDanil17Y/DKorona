@@ -22,6 +22,7 @@ require_once 'src/Exceptions/PageNotFoundException.php';
 
 require_once 'src/Logger.php';
 require_once 'src/SystemVar.php';
+require_once 'src/View.php';
 
 require_once 'src/HttpRequest.php';
 require_once 'src/HttpResponse.php';
