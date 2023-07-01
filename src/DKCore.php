@@ -19,6 +19,12 @@ class DKCore
 			$this->system_var->get('coreLogFileName'),
 			$this->system_var->get('coreLogDetail')
 		);
+
+		if ($this->system_var->get('debug')) {
+			ini_set('display_errors', '1');
+			ini_set('display_startup_errors', '1');
+			error_reporting(E_ALL);
+		}
 	}
 
 	public function setupRouters(callable $func): void
