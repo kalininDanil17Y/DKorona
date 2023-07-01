@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Пропустить запросы на существующие файлы и директории
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Направить все запросы на index.php
+RewriteRule ^(.*)$ index.php [QSA,L]
