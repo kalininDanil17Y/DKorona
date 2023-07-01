@@ -1,0 +1,12 @@
+<?php
+namespace DKLittleSite\Exceptions;
+
+use DKLittleSite\Abstract\AbstractException;
+
+class PageNotFoundException extends AbstractException
+{
+	public function __construct(array $data = [], $message = "Страница не найдена", $code = 404, \Throwable $previous = null)
+	{
+		parent::__construct($message, $data, $code, $previous);
+	}
+}

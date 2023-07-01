@@ -1,6 +1,8 @@
 <?php
 namespace DKLittleSite;
 
+use DKLittleSite\Exceptions\PageNotFoundException;
+
 class Router
 {
 	private array $routes;
@@ -129,7 +131,16 @@ class Router
 
 						$instance = new $class();
 						$instance->$method($request, $response, $matches, $this);
+
+						throw new PageNotFoundException();
 					}
+				} catch (PageNotFoundException $e) {
+					$response->json()->set([
+						'error' => $e->getMessage(),
+						'file' => $e->getFile(),
+						'line' => $e->getLine(),
+						'data' => $e->getData()
+					]);
 				} catch (\Throwable $e) {
 					if ($this->core->system_var->get('debug')) {
 						$response->json()->set([
