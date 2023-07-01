@@ -32,7 +32,7 @@ class Logger
 	 */
 	private function getLogFile(string|null $level = null): string
 	{
-		return sprintf("logs/%s.log", $level ? ($this->logName . '-' . $level) : $this->logName);
+		return sprintf(__DIR__ . "/../logs/%s.log", $level ? ($this->logName . '-' . $level) : $this->logName);
 	}
 
 	/**

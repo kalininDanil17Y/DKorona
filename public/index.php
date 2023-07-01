@@ -1,5 +1,5 @@
 <?php
-require_once 'my_autoload.php';
+require_once __DIR__ . '/../my_autoload.php';
 
 use DKLittleSite\DKCore;
 use DKLittleSite\Router;

@@ -37,7 +37,7 @@ class SystemVar
 
 	public function load(string $confName, bool $is_prefix = false): void
 	{
-		$configFilePath = sprintf('config/%s.php', $confName);
+		$configFilePath = sprintf(__DIR__ . '/../config/%s.php', $confName);
 		if (!file_exists($configFilePath)) {
 			return;
 		}
