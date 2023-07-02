@@ -118,7 +118,7 @@ class httpResponse
 		http_response_code($this->http_code);
 		if ($this->is_json) {
 			header("Content-Type: application/json; charset=utf-8;");
-			echo json_encode($this->json->get());
+			echo json_encode($this->json->get(), JSON_UNESCAPED_UNICODE);
 		} else {
 			header('Content-Type: text/html; charset=utf-8;');
 			echo $this->body->get();
