@@ -3,6 +3,8 @@
 namespace DKLittleSite;
 
 class View {
+	public static array $functions = [];
+
 	public static function render(string $template, array $data = [], $isReturn = true): bool|string
 	{
 		if (!self::check($template)) {
@@ -26,20 +28,71 @@ class View {
 		return true;
 	}
 
-	protected static function parseVariables(string $template, array $data): array|string|null
+	/**
+	 * @param string $template
+	 * @param array  $data
+	 *
+	 * @return string
+	 */
+	protected static function parseVariables(string $template, array $data): string
 	{
-		return preg_replace_callback('/{{\s*([^}]+)\s*}}/', function($matches) use ($data) {
+		return preg_replace_callback('/{{\s*([^}]+)\s*}}/', function ($matches) use ($data) {
 			$variable = trim($matches[1]);
+
+			if (strpos($variable, '(') !== false) {
+				return self::evaluateFunction($variable, $data);
+			}
+
 			return $data[$variable] ?? '';
 		}, $template);
 	}
 
-	protected static function parseComments($template): array|string|null
+	/**
+	 * @param string $function
+	 * @param        $data
+	 *
+	 * @return string
+	 */
+	protected static function evaluateFunction(string $function, $data): string
+	{
+		$functionParts = explode('(', $function, 2);
+		$functionName = trim($functionParts[0]);
+		$arguments = explode(', ', rtrim($functionParts[1], ')'));
+
+		foreach ($arguments as &$argument) {
+			if (isset($data[$argument])) {
+				$argument = $data[$argument];
+			} elseif (strpos($argument, "'") === 0 || strpos($argument, '"') === 0) {
+				$argument = trim($argument, "'\"");
+			}
+		}
+
+		if (isset(self::$functions[$functionName])) {
+			return call_user_func_array(self::$functions[$functionName], $arguments);
+		} elseif (function_exists($functionName)) {
+			return call_user_func_array($functionName, $arguments);
+		}
+
+		return '';
+	}
+
+	/**
+	 * @param string   $name
+	 * @param callable $callback
+	 *
+	 * @return void
+	 */
+	public static function registerFunction(string $name, callable $callback): void
+	{
+		self::$functions[$name] = $callback;
+	}
+
+	protected static function parseComments($template): string
 	{
 		return preg_replace('/{!\s*([^}]+)\s*!}/', '', $template);
 	}
 
-	protected static function executePHP($template): array|string|null
+	protected static function executePHP($template): string
 	{
 		return (preg_replace_callback('/{%\s*([^%]+)\s*%}/', function($matches) {
 			$phpCode = trim($matches[1]);

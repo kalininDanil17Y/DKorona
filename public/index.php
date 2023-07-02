@@ -7,12 +7,12 @@ use DKLittleSite\Router;
 $core = new DKCore();
 
 $core->setupRouters(function (Router $router) {
-	$router->addRoute("/", "HomeController@index");
+	$router->addRoute("/", "HomeController@index")->name('home');
 
 	$router->addRoute("/data/", "HomeController@user");
 	$router->addRoute("/data/{id}", "HomeController@user")->name('get_user');
 
-	$router->addRoute("/about", "AboutController@show");
+	$router->addRoute("/about", "AboutController@show")->name('about');
 	$router->addRoute("/about/2", "AboutController@no_method");
 
 	$router->addRoute("/contact", "ContactController@store", "POST");

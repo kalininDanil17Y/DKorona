@@ -118,6 +118,13 @@ class httpResponse
 		return $this;
 	}
 
+	public function initViewFunctions(Router $router): void
+	{
+		View::registerFunction('getPath', function ($name, $params = []) use ($router) {
+			return $router->getPath($name, $params);
+		});
+	}
+
 	/**
 	 * Send the HTTP response to the client.
 	 */

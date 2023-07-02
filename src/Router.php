@@ -99,6 +99,8 @@ class Router
 		$request = new HttpRequest();
 		$response = new httpResponse();
 
+		$response->initViewFunctions($this);
+
 		$url = $url ?? $request->getRequestUrl();
 		$method = $method ?? $request->getRequestMethod();
 
