@@ -106,7 +106,15 @@ class httpResponse
 	 */
 	public function View(string $template, array $data): static
 	{
-		$this->body()->set(View::render($template, $data));
+		$this->setIsJson(false);
+
+		$html = View::render($template, $data);
+
+		if (!$html) {
+			$html = $template;
+		}
+
+		$this->body()->set($html);
 		return $this;
 	}
 
