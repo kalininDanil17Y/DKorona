@@ -8,7 +8,10 @@ $core = new DKCore();
 
 $core->setupRouters(function (Router $router) {
 	$router->addRoute("/", "HomeController@index");
-	$router->addRoute("/data/{data}", "HomeController@index");
+
+	$router->addRoute("/data/{id}", "HomeController@user");
+	$router->addRoute("/data/{id}", "HomeController@user");
+
 	$router->addRoute("/about", "AboutController@show");
 	$router->addRoute("/contact", "ContactController@store", "POST");
 

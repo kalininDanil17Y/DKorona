@@ -2,21 +2,44 @@
 namespace DKLittleSite\Controllers;
 
 use DKLittleSite\DKCore;
+use DKLittleSite\Exceptions\ForbiddenException;
+use DKLittleSite\Exceptions\PageNotFoundException;
 use DKLittleSite\HttpRequest;
 use DKLittleSite\httpResponse;
 use DKLittleSite\Models\User;
 
 class HomeController
 {
-    public function index(HttpRequest $req, HttpResponse $res, array $match): void
+	public function index()
+	{
+		echo 'Index page';
+	}
+
+	/**
+	 * @throws PageNotFoundException
+	 * @throws ForbiddenException
+	 */
+	public function user(HttpRequest $req, HttpResponse $res, array $match): void
     {
-		$id = $req->getGetParams()->get('id', 2);
+		$res->setIsJson(true);
+		//$id = $req->getGetParams()->get('id', 2);
+
+	    $id = DKCore::arrget($match, 'id');
+
+		if (!$id) {
+			throw new ForbiddenException();
+		}
+
 		$user = User::find($id);
+
+		if (!$user) {
+			throw new PageNotFoundException();
+		}
+
 	    $res->json()->set([
 			'method' => 'getUser',
-			'user' => $user ? $user->getData() : 'User not loaded',
-		    'GET[id]' => $id,
-		    'data' => DKCore::arrget($match, 'data')
+			'user' => $user->getData(),
+		    'GET[id]' => $id
 	    ]);
     }
 }

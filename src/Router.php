@@ -1,9 +1,11 @@
 <?php
 namespace DKLittleSite;
 
+use DKLittleSite\Abstract\AbstractException;
 use DKLittleSite\Exceptions\ForbiddenException;
 use DKLittleSite\Exceptions\InternalServerErrorException;
 use DKLittleSite\Exceptions\PageNotFoundException;
+use Throwable;
 
 class Router
 {
@@ -112,60 +114,30 @@ class Router
 				$controller = $route["controller"];
 
 				try {
-					try {
-						// Если контроллер является анонимной функцией, то выполняем ее
-						if (is_callable($controller)) {
-							call_user_func($controller, $request, $response, $matches, $this);
-						} else {
-							// Если контроллер является строкой, то создаем экземпляр класса и вызываем его метод
-							list($class, $method) = explode("@", $controller);
-
-							$class = str_replace('/', '\\', $class);
-							if (!str_contains($class, '\\')) {
-								$class = '\DKLittleSite\Controllers\\' . $class;
-							}
-
-							if (!class_exists($class)) {
-								throw new \Exception("Class $class does not exist");
-							}
-							if (!method_exists($class, $method)) {
-								throw new \Exception("Method $method does not exist in class $class");
-							}
-
-							$instance = new $class();
-							$instance->$method($request, $response, $matches, $this);
-						}
-					} catch (PageNotFoundException|ForbiddenException $e) {
-						$template = '';
-						switch ($e::class) {
-							case 'DKLittleSite\Exceptions\PageNotFoundException':
-								$template = 'page404';
-								break;
-							case 'DKLittleSite\Exceptions\ForbiddenException':
-								$template = 'page403';
-								break;
-						}
-
-						$html = View::render($template, [
-							'title' => $e->getMessage()
-						]);
-
-						if (!$html) {
-							$html = $template;
-						}
-
-						$response->httpCode($e->getCode())->body()->set($html);
-					}
-				} catch (\Throwable|InternalServerErrorException $e) {
-					if ($this->core->system_var->get('debug')) {
-						$response->json()->set([
-							'error' => $e->getMessage(),
-							'file' => $e->getFile(),
-							'line' => $e->getLine()
-						]);
+					// Если контроллер является анонимной функцией, то выполняем ее
+					if (is_callable($controller)) {
+						call_user_func($controller, $request, $response, $matches, $this);
 					} else {
-						$response->httpCode(500)->body()->set('Server error');
+						// Если контроллер является строкой, то создаем экземпляр класса и вызываем его метод
+						list($class, $method) = explode("@", $controller);
+
+						$class = str_replace('/', '\\', $class);
+						if (!str_contains($class, '\\')) {
+							$class = '\DKLittleSite\Controllers\\' . $class;
+						}
+
+						if (!class_exists($class)) {
+							throw new \Exception("Class $class does not exist");
+						}
+						if (!method_exists($class, $method)) {
+							throw new \Exception("Method $method does not exist in class $class");
+						}
+
+						$instance = new $class();
+						$instance->$method($request, $response, $matches, $this);
 					}
+				} catch (Throwable $e) {
+					$this->renderError($response, $e);
 				}
 
 				$response->send();
@@ -173,10 +145,52 @@ class Router
 			}
 		}
 
-		// Если контроллера нет, вывести страницу 404
-		header("HTTP/1.0 404 Not Found");
-		if (!View::render('page404')) {
-			echo 404;
+		$this->renderError($response, new PageNotFoundException());
+		$response->send();
+	}
+
+	/**
+	 * @param httpResponse                $response
+	 * @param AbstractException|Throwable $error
+	 *
+	 * @return void
+	 */
+	private function renderError(httpResponse $response, AbstractException|Throwable $error): void
+	{
+		/**
+		 * Если это не кастомная ошибка, делаем её 500
+		 */
+		if (!in_array($error::class, [ForbiddenException::class, InternalServerErrorException::class, PageNotFoundException::class])) {
+			$error = new InternalServerErrorException([
+				'file' => $error->getFile(),
+				'line' => $error->getLine()
+			], $error->getMessage());
 		}
+
+		// Ставим код ответа http
+		$response->httpCode($error->getCode());
+
+		$data = [
+			'title' => $error->getMessage(),
+			'error' => $error->getMessage(),
+			'type' => $error::NAME,
+			'code' => $error->getCode(),
+			'data' => $error->getData(),
+			'debug' => $this->core->system_var->get('debug')
+		];
+
+		if ($data['debug']) {
+			$data['file'] = $error->getCustomFile();
+			$data['line'] =$error->getCustomLine();
+		}
+
+		// Рендерим json
+		if ($response->isJson()) {
+			$response->json()->set($data);
+			return;
+		}
+
+		// Рендерим html
+		$response->View($error::NAME, $data);
 	}
 }

@@ -17,6 +17,11 @@ class httpResponse
 	private int $http_code;
 
 	/**
+	 * @var bool
+	 */
+	private bool $is_json = false;
+
+	/**
 	 * The JSON object for the response.
 	 *
 	 * @var HttpResponseJson
@@ -48,7 +53,26 @@ class httpResponse
 	 */
 	public function json(): HttpResponseJson
 	{
+		$this->is_json = true;
 		return $this->json;
+	}
+
+	/**
+	 * @param bool $bool
+	 *
+	 * @return void
+	 */
+	public function setIsJson(bool $bool): void
+	{
+		$this->is_json = $bool;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isJson(): bool
+	{
+		return $this->is_json;
 	}
 
 	/**
@@ -75,12 +99,24 @@ class httpResponse
 	}
 
 	/**
+	 * @param string $template
+	 * @param array  $data
+	 *
+	 * @return $this
+	 */
+	public function View(string $template, array $data): static
+	{
+		$this->body()->set(View::render($template, $data));
+		return $this;
+	}
+
+	/**
 	 * Send the HTTP response to the client.
 	 */
 	public function send(): void
 	{
 		http_response_code($this->http_code);
-		if (!empty((array) $this->json->get())) {
+		if ($this->is_json) {
 			header("Content-Type: application/json; charset=utf-8;");
 			echo json_encode($this->json->get());
 		} else {
