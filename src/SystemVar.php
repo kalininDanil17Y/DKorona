@@ -52,4 +52,11 @@ class SystemVar
 			}
 		}
 	}
+
+	public static function staticGet(string $conf, string $name): mixed
+	{
+		$var = new self();
+		$var->load($conf);
+		return $var->get($name);
+	}
 }
