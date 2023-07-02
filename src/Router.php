@@ -137,7 +137,7 @@ class Router
 						$instance = new $class();
 						$instance->$method($request, $response, $matches, $this);
 					}
-				} catch (Throwable|ParseError $e) {
+				} catch (Throwable $e) {
 					$this->renderError($response, $e);
 				}
 
