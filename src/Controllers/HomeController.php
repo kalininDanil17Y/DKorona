@@ -10,7 +10,7 @@ use DKLittleSite\Models\User;
 
 class HomeController
 {
-	public function index()
+	public function index(): void
 	{
 		echo 'Index page';
 	}
@@ -24,7 +24,7 @@ class HomeController
 		$res->setIsJson(true);
 		//$id = $req->getGetParams()->get('id', 2);
 
-	    $id = DKCore::arrget($match, 'id');
+	    $id = DKCore::arrayGet($match, 'id');
 
 		if (!$id) {
 			throw new ForbiddenException();

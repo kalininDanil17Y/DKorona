@@ -33,7 +33,7 @@ class DKCore
 		$this->router->route();
 	}
 
-	public static function arrget(array $arr, string|int $key)
+	public static function arrayGet(array $arr, string|int $key)
 	{
 		return array_key_exists($key, $arr) ? $arr[$key] : null;
 	}
