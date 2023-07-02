@@ -160,14 +160,19 @@ class Router
 		/**
 		 * Если это не кастомная ошибка, делаем её 500
 		 */
-		if (!in_array($error::class, [ForbiddenException::class, InternalServerErrorException::class, PageNotFoundException::class])) {
+		$className = pathinfo($error::class, PATHINFO_BASENAME);
+		$filepath = __DIR__ . '/../src/Exceptions/' . $className . '.php';
+
+		if (!(class_exists($error::class) && file_exists($filepath))) {
 			$error = new InternalServerErrorException([
 				'file' => $error->getFile(),
 				'line' => $error->getLine()
 			], $error->getMessage());
 		}
 
-		// Ставим код ответа http
+		/**
+		 * Ставим код ответа http
+		 */
 		$response->httpCode($error->getCode());
 
 		$data = [
@@ -184,13 +189,17 @@ class Router
 			$data['line'] =$error->getCustomLine();
 		}
 
-		// Рендерим json
+		/**
+		 * Рендерим json
+		 */
 		if ($response->isJson()) {
 			$response->json()->set($data);
 			return;
 		}
 
-		// Рендерим html
+		/**
+		 * Рендерим html
+		 */
 		$response->View($error::NAME, $data);
 	}
 }
