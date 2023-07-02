@@ -145,7 +145,7 @@ class Router
 			}
 		}
 
-		$this->renderError($response, new PageNotFoundException());
+		$this->renderError($response, new InternalServerErrorException());
 		$response->send();
 	}
 
