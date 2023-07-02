@@ -111,7 +111,7 @@ class httpResponse
 		$html = View::render($template, $data);
 
 		if (!$html) {
-			$html = $template;
+			$html = sprintf('Template "%s" not found :( ', $template);
 		}
 
 		$this->body()->set($html);
