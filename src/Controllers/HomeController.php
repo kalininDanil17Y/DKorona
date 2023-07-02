@@ -30,8 +30,6 @@ class HomeController
 			throw new ForbiddenException();
 		}
 
-		1/0;
-
 		$user = User::find($id);
 
 		if (!$user) {
