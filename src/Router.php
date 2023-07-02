@@ -2,10 +2,8 @@
 namespace DKLittleSite;
 
 use DKLittleSite\Abstract\AbstractException;
-use DKLittleSite\Exceptions\ForbiddenException;
 use DKLittleSite\Exceptions\InternalServerErrorException;
 use DKLittleSite\Exceptions\PageNotFoundException;
-use ParseError;
 use Throwable;
 
 class Router
@@ -34,6 +32,7 @@ class Router
 			"pattern" => $pattern,
 			"controller" => $controller,
 			"method" => $method,
+			"name" => '',
 		];
 		return $this;
 	}
