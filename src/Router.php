@@ -162,7 +162,8 @@ class Router
 		/**
 		 * Если это не кастомная ошибка, делаем её 500
 		 */
-		$className = pathinfo($error::class, PATHINFO_BASENAME);
+		$array = explode('\\', $error::class);
+		$className = end($array);
 		$filepath = __DIR__ . '/../src/Exceptions/' . $className . '.php';
 		print_r([$className, $filepath]);
 
