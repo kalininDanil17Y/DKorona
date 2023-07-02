@@ -39,30 +39,31 @@ class View {
 		return preg_replace_callback('/{{\s*([^}]+)\s*}}/', function ($matches) use ($data) {
 			$variable = trim($matches[1]);
 
-			if (strpos($variable, '(') !== false) {
+			if (str_contains($variable, '(') && str_contains($variable, ')')) {
 				return self::evaluateFunction($variable, $data);
 			}
 
-			return $data[$variable] ?? '';
+			$value = $data[$variable] ?? '';
+
+			if (is_string($value)) {
+				return $value;
+			}
+
+			return var_export($value, true);
 		}, $template);
 	}
 
-	/**
-	 * @param string $function
-	 * @param        $data
-	 *
-	 * @return string
-	 */
-	protected static function evaluateFunction(string $function, $data): string
+	protected static function evaluateFunction(string $function, array $data): string
 	{
 		$functionParts = explode('(', $function, 2);
 		$functionName = trim($functionParts[0]);
-		$arguments = explode(', ', rtrim($functionParts[1], ')'));
+
+		$arguments = array_map('trim', explode(',', rtrim($functionParts[1], ')')));
 
 		foreach ($arguments as &$argument) {
 			if (isset($data[$argument])) {
 				$argument = $data[$argument];
-			} elseif (strpos($argument, "'") === 0 || strpos($argument, '"') === 0) {
+			} elseif (str_starts_with($argument, "'") || str_starts_with($argument, '"')) {
 				$argument = trim($argument, "'\"");
 			}
 		}

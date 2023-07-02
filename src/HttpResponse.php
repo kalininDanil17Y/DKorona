@@ -120,8 +120,8 @@ class httpResponse
 
 	public function initViewFunctions(Router $router): void
 	{
-		View::registerFunction('getPath', function ($name, $params = []) use ($router) {
-			return $router->getPath($name, $params);
+		View::registerFunction('getPath', function ($name, $id = null, $val = null) use ($router) {
+			return $router->getPath($name, ($id && $val ? [$id => $val] : []));
 		});
 	}
 
