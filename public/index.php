@@ -14,7 +14,7 @@ $core->setupRouters(function (Router $router) {
 
 	$router->addRoute("/about", "AboutController@show");
 
-	$router->addRoute("/about", "AboutController@no_method");
+	$router->addRoute("/about2", "AboutController@no_method");
 
 	$router->addRoute("/contact", "ContactController@store", "POST");
 
