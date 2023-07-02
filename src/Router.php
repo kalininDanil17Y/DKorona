@@ -5,6 +5,7 @@ use DKLittleSite\Abstract\AbstractException;
 use DKLittleSite\Exceptions\ForbiddenException;
 use DKLittleSite\Exceptions\InternalServerErrorException;
 use DKLittleSite\Exceptions\PageNotFoundException;
+use ParseError;
 use Throwable;
 
 class Router
@@ -136,7 +137,7 @@ class Router
 						$instance = new $class();
 						$instance->$method($request, $response, $matches, $this);
 					}
-				} catch (Throwable $e) {
+				} catch (Throwable|ParseError $e) {
 					$this->renderError($response, $e);
 				}
 
