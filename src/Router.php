@@ -165,7 +165,6 @@ class Router
 		$array = explode('\\', $error::class);
 		$className = end($array);
 		$filepath = __DIR__ . '/../src/Exceptions/' . $className . '.php';
-		print_r([$className, $filepath]);
 
 		if (!(class_exists($error::class) && file_exists($filepath))) {
 			$error = new InternalServerErrorException([
