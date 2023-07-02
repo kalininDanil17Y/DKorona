@@ -13,6 +13,9 @@ $core->setupRouters(function (Router $router) {
 	$router->addRoute("/data/{id}", "HomeController@user");
 
 	$router->addRoute("/about", "AboutController@show");
+
+	$router->addRoute("/about", "AboutController@no_method");
+
 	$router->addRoute("/contact", "ContactController@store", "POST");
 
 	$router->addRoute("/test", function ($req, $res) {
