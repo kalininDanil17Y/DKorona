@@ -7,12 +7,14 @@ use DKLittleSite\Exceptions\PageNotFoundException;
 use DKLittleSite\HttpRequest;
 use DKLittleSite\httpResponse;
 use DKLittleSite\Models\User;
+use DKLittleSite\Router;
 
 class HomeController
 {
-	public function index(): void
+	public function index(HttpRequest $req, HttpResponse $res, array $match, Router $router): void
 	{
 		echo 'Index page';
+		echo '<a href="' . $router->getPath('get_user', ['id' => 2])  . '">User 2</a>';
 	}
 
 	/**
