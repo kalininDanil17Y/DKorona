@@ -13,7 +13,7 @@ class HomeController
 {
 	public function index(HttpRequest $req, HttpResponse $res, array $match, Router $router): void
 	{
-		echo 'Index page';
+		echo 'Index page <br>';
 		echo '<a href="' . $router->getPath('get_user', ['id' => 2])  . '">User 2</a>';
 	}
 
