@@ -56,6 +56,6 @@ class View {
 
 	public static function getPath(string $template): string
 	{
-		return sprintf('src/templates/%s.php', $template);
+		return sprintf(__DIR__ . '/../src/templates/%s.php', $template);
 	}
 }
