@@ -55,6 +55,14 @@ class Router
 		return $url;
 	}
 
+	/**
+	 * @return array
+	 */
+	public function getRouters(): array
+	{
+		return $this->routes;
+	}
+
 	public function getPath(string $name, $params = []): string|false
 	{
 		$route = $this->getRoute($name);
@@ -76,22 +84,23 @@ class Router
 		return false;
 	}
 
-	public function group($prefix, callable $callback): void
+	public function group($prefix, callable $callback, string $groupName = ''): void
 	{
-		$oldRoutes = $this->routes;
-		$this->routes = [];
+		$router = new Router(new DKCore());
 
 		// Call the callback with the router instance
-		call_user_func($callback, $this);
+		call_user_func($callback, $router);
 
 		// Prepend the prefix to all routes added inside the callback
-		foreach ($this->routes as $route) {
+		foreach ($router->getRouters() as $route) {
 			$route['url'] = $prefix . $route['url'];
+
+			$pattern = preg_replace('/\{([^}]+)}/', '(?P<$1>[^/]+)', $route['url']);
+			$route['pattern'] = "/^" . str_replace("/", "\/", $pattern) . "$/";
+
+			$route['name'] = $groupName . $route['name'];
 			$this->routes[] = $route;
 		}
-
-		// Restore the old routes
-		$this->routes = array_merge($oldRoutes, $this->routes);
 	}
 
 	public function route($url = null, $method = null): void
