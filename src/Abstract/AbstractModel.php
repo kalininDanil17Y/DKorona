@@ -1,8 +1,8 @@
 <?php
 
-namespace DKLittleSite\Abstract;
+namespace DKorona\Abstract;
 
-use DKLittleSite\DB;
+use DKorona\DB;
 
 /**
  * Базовый класс модели

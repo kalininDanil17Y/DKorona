@@ -1,7 +1,7 @@
 <?php
-namespace DKLittleSite\Exceptions;
+namespace DKorona\Exceptions;
 
-use DKLittleSite\Abstract\AbstractException;
+use DKorona\Abstract\AbstractException;
 
 class ForbiddenException extends AbstractException
 {

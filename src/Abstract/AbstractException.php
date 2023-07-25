@@ -1,6 +1,6 @@
 <?php
 
-namespace DKLittleSite\Abstract;
+namespace DKorona\Abstract;
 
 class AbstractException extends \Exception
 {

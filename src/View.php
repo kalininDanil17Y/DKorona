@@ -1,6 +1,6 @@
 <?php
 
-namespace DKLittleSite;
+namespace DKorona;
 
 class View {
 	public static array $functions = [];

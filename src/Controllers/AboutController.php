@@ -1,5 +1,5 @@
 <?php
-namespace DKLittleSite\Controllers;
+namespace DKorona\Controllers;
 
 class AboutController
 {

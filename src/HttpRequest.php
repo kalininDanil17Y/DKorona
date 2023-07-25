@@ -1,9 +1,9 @@
 <?php
-namespace DKLittleSite;
+namespace DKorona;
 
-use DKLittleSite\HttpRequest\HttpGetParams;
-use DKLittleSite\HttpRequest\HttpPostParams;
-use DKLittleSite\HttpRequest\HttpServer;
+use DKorona\HttpRequest\HttpGetParams;
+use DKorona\HttpRequest\HttpPostParams;
+use DKorona\HttpRequest\HttpServer;
 
 class HttpRequest
 {

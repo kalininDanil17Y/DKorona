@@ -1,9 +1,9 @@
 <?php
-namespace DKLittleSite;
+namespace DKorona;
 
-use DKLittleSite\Abstract\AbstractException;
-use DKLittleSite\Exceptions\InternalServerErrorException;
-use DKLittleSite\Exceptions\PageNotFoundException;
+use DKorona\Abstract\AbstractException;
+use DKorona\Exceptions\InternalServerErrorException;
+use DKorona\Exceptions\PageNotFoundException;
 use Throwable;
 
 class Router
@@ -17,7 +17,17 @@ class Router
 		$this->core = $core;
 	}
 
-	public function addRoute($url, $controller, $method = "GET", $regex = null): static
+	/**
+	 * Добавляет маршрут с определенным URL, контроллером и методом запроса.
+	 *
+	 * @param $url
+	 * @param $controller
+	 * @param string $method
+	 * @param $regex
+	 *
+	 * @return $this
+	 */
+	public function addRoute($url, $controller, string $method = "GET", $regex = null): static
 	{
 		if ($regex) {
 			$pattern = $regex;
@@ -33,10 +43,18 @@ class Router
 			"controller" => $controller,
 			"method" => $method,
 			"name" => '',
+			"middleware" => ''
 		];
 		return $this;
 	}
 
+	/**
+	 * Устанавливает имя для последнего добавленного маршрута.
+	 *
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
 	public function name(string $name): bool
 	{
 		$id = array_key_last($this->routes);
@@ -48,7 +66,15 @@ class Router
 		return true;
 	}
 
-	private function generate_url(string $url, $params): string {
+	/**
+	 * Генерирует URL, заменяя параметры в фигурных скобках на соответствующие значения из массива параметров.
+	 *
+	 * @param string $url
+	 * @param array  $params
+	 *
+	 * @return string
+	 */
+	private function generate_url(string $url, array $params): string {
 		foreach ($params as $key => $value) {
 			$url = str_replace("{".$key."}", $value, $url);
 		}
@@ -56,6 +82,8 @@ class Router
 	}
 
 	/**
+	 * Возвращает массив всех добавленных маршрутов.
+	 *
 	 * @return array
 	 */
 	public function getRouters(): array
@@ -63,7 +91,15 @@ class Router
 		return $this->routes;
 	}
 
-	public function getPath(string $name, $params = []): string|false
+	/**
+	 * Возвращает путь (URL) для маршрута с определенным именем и параметрами.
+	 *
+	 * @param string $name
+	 * @param array  $params
+	 *
+	 * @return string|false
+	 */
+	public function getPath(string $name, array $params = []): string|false
 	{
 		$route = $this->getRoute($name);
 		if (!$route) {
@@ -73,6 +109,12 @@ class Router
 		return $this->generate_url($route['url'], $params);
 	}
 
+	/**
+	 * Возвращает информацию о маршруте с определенным именем.
+	 * @param string $name
+	 *
+	 * @return array|false
+	 */
 	public function getRoute(string $name): array|false
 	{
 		foreach($this->routes as $route) {
@@ -84,7 +126,17 @@ class Router
 		return false;
 	}
 
-	public function group($prefix, callable $callback, string $groupName = ''): void
+	/**
+	 * Группирует маршруты и применяет общий префикс для URL.
+	 *
+	 * @param          $prefix
+	 * @param callable $callback
+	 * @param string   $groupName
+	 * @param string   $middleware
+	 *
+	 * @return void
+	 */
+	public function group($prefix, callable $callback, string $groupName = '', string $middleware = ''): void
 	{
 		$router = new Router(new DKCore());
 
@@ -99,10 +151,38 @@ class Router
 			$route['pattern'] = "/^" . str_replace("/", "\/", $pattern) . "$/";
 
 			$route['name'] = $groupName . $route['name'];
+			$route['middleware'] = $middleware;
+
 			$this->routes[] = $route;
 		}
 	}
 
+	/**
+	 * Пре-контроллер роутера
+	 *
+	 * @param string $middleware
+	 *
+	 * @return bool
+	 */
+	public function middleware(string $middleware): bool
+	{
+		$id = array_key_last($this->routes);
+		if ($id === null) {
+			return false;
+		}
+
+		$this->routes[$id]['middleware'] = $middleware;
+		return true;
+	}
+
+	/**
+	 * Обрабатывает входящий запрос, находит соответствующий маршрут и вызывает соответствующий контроллер для обработки запроса.
+	 *
+	 * @param $url
+	 * @param $method
+	 *
+	 * @return void
+	 */
 	public function route($url = null, $method = null): void
 	{
 		$request = new HttpRequest();
@@ -134,7 +214,7 @@ class Router
 
 						$class = str_replace('/', '\\', $class);
 						if (!str_contains($class, '\\')) {
-							$class = '\DKLittleSite\Controllers\\' . $class;
+							$class = '\DKorona\Controllers\\' . $class;
 						}
 
 						if (!class_exists($class)) {
@@ -144,8 +224,21 @@ class Router
 							throw new \Exception("Method $method does not exist in class $class");
 						}
 
-						$instance = new $class();
-						$instance->$method($request, $response, $matches, $this);
+						/** @var true $middlewareResponse */
+						$middlewareResponse = true;
+						if (!empty($route['middleware']) && $route['middleware'] !== '') {
+							$middlewareName = $route['middleware'];
+							$middlewarePath = sprintf('src/Middleware/%s.php', $middlewareName);
+							if (file_exists($middlewarePath)) {
+								require_once $middlewarePath;
+								call_user_func(['\DKorona\Middleware\\' . $middlewareName, 'run'], $request, $response, $matches, $this);
+							}
+						}
+
+						if ($middlewareResponse) {
+							$instance = new $class();
+							$instance->$method($request, $response, $matches, $this);
+						}
 					}
 				} catch (Throwable $e) {
 					$this->renderError($response, $e);
@@ -161,6 +254,8 @@ class Router
 	}
 
 	/**
+	 * Метод для рендеринга ошибок, включая обработку исключений и генерацию соответствующего ответа.
+	 *
 	 * @param httpResponse                $response
 	 * @param AbstractException|Throwable $error
 	 *

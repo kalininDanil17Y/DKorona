@@ -1,8 +1,8 @@
 <?php
-namespace DKLittleSite;
+namespace DKorona;
 
-use DKLittleSite\HttpResponse\HttpResponseBody;
-use DKLittleSite\HttpResponse\HttpResponseJson;
+use DKorona\HttpResponse\HttpResponseBody;
+use DKorona\HttpResponse\HttpResponseJson;
 
 /**
  * Class httpResponse represents an HTTP response.
@@ -138,5 +138,14 @@ class httpResponse
 			header('Content-Type: text/html; charset=utf-8;');
 			echo $this->body->get();
 		}
+	}
+
+	public function isset(): bool
+	{
+		if ($this->is_json || (!empty($this->body->get()) && strlen($this->body->get()) > 0)) {
+			return true;
+		}
+
+		return false;
 	}
 }

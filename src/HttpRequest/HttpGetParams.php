@@ -1,7 +1,7 @@
 <?php
-namespace DKLittleSite\HttpRequest;
+namespace DKorona\HttpRequest;
 
-use DKLittleSite\Abstract\AbstractHttp;
+use DKorona\Abstract\AbstractHttp;
 
 class HttpGetParams extends AbstractHttp
 {

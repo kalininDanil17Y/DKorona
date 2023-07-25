@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../my_autoload.php';
 
-use DKLittleSite\DKCore;
-use DKLittleSite\Router;
+use DKorona\DKCore;
+use DKorona\Router;
 
 $core = new DKCore();
 
@@ -18,6 +18,8 @@ $core->setupRouters(function (Router $router) {
 	}, 'about');
 
 	$router->addRoute("/contact", "ContactController@store", "POST");
+
+	$router->addRoute("/admin", "ContactController@admin", "GET")->middleware('AuthMiddleware');
 
 	$router->addRoute("/test", function ($req, $res) {
 		$res->body()->add(" world!")->prepend('Hello,');

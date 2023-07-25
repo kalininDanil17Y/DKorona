@@ -1,5 +1,5 @@
 <?php
-namespace DKLittleSite\Controllers;
+namespace DKorona\Controllers;
 
 class ContactController
 {
@@ -7,4 +7,9 @@ class ContactController
     {
         echo "The contact form has been submitted.";
     }
+
+	public function admin(): void
+	{
+		echo 'Admin';
+	}
 }

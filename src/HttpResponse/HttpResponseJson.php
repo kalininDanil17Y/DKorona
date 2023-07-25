@@ -1,6 +1,6 @@
 <?php
 
-namespace DKLittleSite\HttpResponse;
+namespace DKorona\HttpResponse;
 
 class HttpResponseJson
 {

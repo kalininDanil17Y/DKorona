@@ -1,6 +1,6 @@
 <?php
 
-namespace DKLittleSite;
+namespace DKorona;
 
 class DKCore
 {

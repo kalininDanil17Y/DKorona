@@ -1,7 +1,7 @@
 <?php
-namespace DKLittleSite\Models;
+namespace DKorona\Models;
 
-use DKLittleSite\Abstract\AbstractModel;
+use DKorona\Abstract\AbstractModel;
 
 class User extends AbstractModel {
 	protected string $table = 'users';

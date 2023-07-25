@@ -1,13 +1,13 @@
 <?php
-namespace DKLittleSite\Controllers;
+namespace DKorona\Controllers;
 
-use DKLittleSite\DKCore;
-use DKLittleSite\Exceptions\ForbiddenException;
-use DKLittleSite\Exceptions\PageNotFoundException;
-use DKLittleSite\HttpRequest;
-use DKLittleSite\httpResponse;
-use DKLittleSite\Models\User;
-use DKLittleSite\Router;
+use DKorona\DKCore;
+use DKorona\Exceptions\ForbiddenException;
+use DKorona\Exceptions\PageNotFoundException;
+use DKorona\HttpRequest;
+use DKorona\httpResponse;
+use DKorona\Models\User;
+use DKorona\Router;
 
 class HomeController
 {

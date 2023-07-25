@@ -1,10 +1,10 @@
 <?php
 
-namespace DKLittleSite;
+namespace DKorona;
 
 /**
  * Class SystemVar
- * @package DKLittleSite
+ * @package DKorona
  */
 class SystemVar
 {

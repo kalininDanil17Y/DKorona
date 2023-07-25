@@ -1,7 +1,7 @@
 <?php
 require_once 'my_autoload.php';
 
-use DKLittleSite\DB;
+use DKorona\DB;
 
 /**
  * Путь к директории с миграциями
@@ -32,7 +32,7 @@ if ($argv[1] == "create") {
 	 * Создание файла миграции
 	 */
 	$migrationFilename = "{$migrationsPath}/{$migrationName}.php";
-	file_put_contents($migrationFilename, "<?php\n\nclass {$migrationName} extends \\DKLittleSite\\Abstract\\AbstractMigration\n{\n    public function up()\n    {\n        // Write your SQL queries here using \$this->query('')\n    }\n\n    public function down()\n    {\n        // Write your SQL queries here using \$this->query()\n    }\n}\n");
+	file_put_contents($migrationFilename, "<?php\n\nclass {$migrationName} extends \\DKorona\\Abstract\\AbstractMigration\n{\n    public function up()\n    {\n        // Write your SQL queries here using \$this->query('')\n    }\n\n    public function down()\n    {\n        // Write your SQL queries here using \$this->query()\n    }\n}\n");
 
 	echo "Migration '{$migrationName}' has been created.\n";
 }

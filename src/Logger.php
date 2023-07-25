@@ -1,12 +1,12 @@
 <?php
 
-namespace DKLittleSite;
+namespace DKorona;
 
 use mysql_xdevapi\SqlStatementResult;
 
 /**
  * Class Logger
- * @package DKLittleSite
+ * @package DKorona
  */
 class Logger
 {
