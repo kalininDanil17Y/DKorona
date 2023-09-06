@@ -151,7 +151,7 @@ class Router
 			$route['pattern'] = "/^" . str_replace("/", "\/", $pattern) . "$/";
 
 			$route['name'] = $groupName . $route['name'];
-			$route['middleware'] = $middleware;
+			$route['middleware'] = ($route['middleware'] !== '') ? $route['middleware'] : $middleware;
 
 			$this->routes[] = $route;
 		}
@@ -228,11 +228,7 @@ class Router
 						$middlewareResponse = true;
 						if (!empty($route['middleware']) && $route['middleware'] !== '') {
 							$middlewareName = $route['middleware'];
-							$middlewarePath = sprintf('src/Middleware/%s.php', $middlewareName);
-							if (file_exists($middlewarePath)) {
-								require_once $middlewarePath;
-								call_user_func(['\DKorona\Middleware\\' . $middlewareName, 'run'], $request, $response, $matches, $this);
-							}
+                            call_user_func(['\DKorona\Middleware\\' . $middlewareName, 'run'], $request, $response, $matches, $this);
 						}
 
 						if ($middlewareResponse) {
