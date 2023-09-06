@@ -186,7 +186,7 @@ class Router
 	public function route($url = null, $method = null): void
 	{
 		$request = new HttpRequest();
-		$response = new httpResponse();
+		$response = new HttpResponse();
 
 		$response->initViewFunctions($this);
 
@@ -252,12 +252,12 @@ class Router
 	/**
 	 * Метод для рендеринга ошибок, включая обработку исключений и генерацию соответствующего ответа.
 	 *
-	 * @param httpResponse                $response
+	 * @param HttpResponse                $response
 	 * @param AbstractException|Throwable $error
 	 *
 	 * @return void
 	 */
-	private function renderError(httpResponse $response, AbstractException|Throwable $error): void
+	private function renderError(HttpResponse $response, AbstractException|Throwable $error): void
 	{
 		/**
 		 * Если это не кастомная ошибка, делаем её 500

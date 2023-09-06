@@ -7,7 +7,7 @@ use DKorona\HttpResponse\HttpResponseJson;
 /**
  * Class httpResponse represents an HTTP response.
  */
-class httpResponse
+class HttpResponse
 {
 	/**
 	 * The HTTP status code for the response.
@@ -131,11 +131,12 @@ class httpResponse
 	public function send(): void
 	{
 		http_response_code($this->http_code);
+
 		if ($this->is_json) {
-			header("Content-Type: application/json; charset=utf-8;");
+			header('Content-Type: application/json');
 			echo json_encode($this->json->get(), JSON_UNESCAPED_UNICODE);
 		} else {
-			header('Content-Type: text/html; charset=utf-8;');
+			header('Content-Type: text/html');
 			echo $this->body->get();
 		}
 	}

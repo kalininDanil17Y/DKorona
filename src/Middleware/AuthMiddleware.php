@@ -3,7 +3,7 @@ namespace DKorona\Middleware;
 
 use DKorona\Exceptions\ForbiddenException;
 use DKorona\HttpRequest;
-use DKorona\httpResponse;
+use DKorona\HttpResponse;
 use DKorona\Router;
 use Throwable;
 

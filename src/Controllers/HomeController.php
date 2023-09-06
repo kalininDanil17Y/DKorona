@@ -5,7 +5,7 @@ use DKorona\DKCore;
 use DKorona\Exceptions\ForbiddenException;
 use DKorona\Exceptions\PageNotFoundException;
 use DKorona\HttpRequest;
-use DKorona\httpResponse;
+use DKorona\HttpResponse;
 use DKorona\Models\User;
 use DKorona\Router;
 
