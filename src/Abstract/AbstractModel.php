@@ -56,10 +56,18 @@ abstract class AbstractModel {
 	 */
 	public static function find($id, bool $safeMode = false): ?static
 	{
+		$key = 'id';
+		$value = $id;
+
+		if (is_array($id) && count($id) > 1) {
+			$key = $id[0];
+			$value = $id[1];
+		}
+
 		$db = DB::getInstance();
 		$table = (new static)->table;
-		$sql = sprintf(/** @lang text */ "SELECT * FROM %s WHERE id = ?", $table);
-		$params = [$id];
+		$sql = sprintf(/** @lang text */"SELECT * FROM %s WHERE " . $key . " = ?", $table);
+		$params = [$value];
 		$result = $db->query($sql, $params);
 		if (count($result) > 0) {
 			return new static($result[0]);
